@@ -66,6 +66,30 @@ div {
   background-color: #f2f2f2;
   padding: 20px;
 }
+
+
+#contact {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#contact td, #contact th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#contact tr:nth-child(even){background-color: #f2f2f2;}
+
+#contact tr:hover {background-color: #ddd;}
+
+#contact th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
 </style>  
 <body>
 <div class="container">
@@ -83,22 +107,24 @@ div {
   
       <button id="lbut" type="submit" value="Submit">Add</button>
     </form>
+
+    <p id="table"></p>
+
   </div>
+
 </div>
 
 </body>
 
 <script>
+  MountTable ();
   var httpRequest;
   const form = document.getElementById('form');
-  const AddCon = document.getElementById('AddCon');
 
   form.addEventListener('submit', AddContact);
 
   function AddContact(event) {
     event.preventDefault();
-
-    AddCon.style.display = "block";
 
     var code = Math.floor(Math.random() * 65536);
     var company = document.getElementById('lname').value;
@@ -110,8 +136,6 @@ div {
 
     if (!httpRequest) {
       alert('Impossible to connect');
-      AddCon.style.display = "none";
-
       return false;
     }
     httpRequest.onreadystatechange = TreatResponse;
@@ -124,19 +148,52 @@ div {
 
   function TreatResponse() {
 
-    AddCon.style.display = 'block';
-
     if (httpRequest.readyState === XMLHttpRequest.DONE) {
       if (httpRequest.status === 200) {
         alert(httpRequest.responseText);
         document.getElementById('form').reset();
+        MountTable();
     //    window.location.href = 'https://us-central1-go-inventory.cloudfunctions.net/app/read-itens';
       } else {
         alert('Houve um problema ao conectar com o Banco de Dados');
 
       }
     }
-  };
+  }
+  
+function MountTable() {
+
+httpRequestTable = new XMLHttpRequest();
+
+if (!httpRequestTable) {
+  alert('Impossible to connect');
+return false;
+}
+
+
+httpRequestTable.onreadystatechange = function() {
+  if (this.readyState == 4 && this.status == 200) {
+    myTab = JSON.parse(this.responseText);
+    txt = "<table id='contact'>"
+    txt += "<tr><th>Code</th><th>Name</th><th>Contact</th><th>Telephone</th><th>Action</th></tr>"
+    for (x in myTab) {
+      txt += "<tr><td>" + myTab[x].cod + "</td>";
+      txt += "<td>" + myTab[x].nome + "</td>";
+      txt += "<td>" + myTab[x].contato + "</td>";
+      txt += "<td>" + myTab[x].telefone + "</td>";
+      txt += "<td><a herf='#'>delete</a></td></tr>";
+
+    }
+    txt += "</table>"
+    document.getElementById("table").innerHTML = txt;
+  }
+}
+httpRequestTable.open("GET", "https://us-central1-go-inventory.cloudfunctions.net/app/read-itens", true);
+httpRequestTable.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+httpRequestTable.send();
+
+  }
+  ;
 </script>
 </HTML>
 
