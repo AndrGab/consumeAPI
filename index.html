@@ -1,8 +1,9 @@
 <HTML>
 <!-- 
 **
-**   Enviando POST por Javascript/HTML 
-**   Form's CSS --- w3schools.com   
+**   Enviando Request por Javascript/HTML 
+**   Form's CSS --- w3schools.com
+**   Consuming API with Pure Javascript/HTML
 **
 -->
 <style type="text/css">
@@ -96,8 +97,8 @@ div {
   <div id="AddCon">
     <p>HTML/JAVASCRIPT - USING FIREBASE API</p>
     <form id="form" action="#">
-      <label for="lname">Name</label>
-      <input type="text" id="lname" name="Name" placeholder="Name..." required>
+      <label for="lname">Company</label>
+      <input type="text" id="lname" name="Company" placeholder="Company..." required>
   
       <label for="lcontact">Contact</label>
       <input type="text" id="lcontact" name="Contact" placeholder="Contact..." required>
@@ -153,9 +154,8 @@ div {
         alert(httpRequest.responseText);
         document.getElementById('form').reset();
         MountTable();
-    //    window.location.href = 'https://us-central1-go-inventory.cloudfunctions.net/app/read-itens';
       } else {
-        alert('Houve um problema ao conectar com o Banco de Dados');
+        alert('Database Error');
 
       }
     }
@@ -175,22 +175,45 @@ httpRequestTable.onreadystatechange = function() {
   if (this.readyState == 4 && this.status == 200) {
     myTab = JSON.parse(this.responseText);
     txt = "<table id='contact'>"
-    txt += "<tr><th>Code</th><th>Name</th><th>Contact</th><th>Telephone</th><th>Action</th></tr>"
+    txt += "<tr><th>Code</th><th>Company</th><th>Contact</th><th>Telephone</th><th>Action</th></tr>"
     for (x in myTab) {
       txt += "<tr><td>" + myTab[x].cod + "</td>";
       txt += "<td>" + myTab[x].nome + "</td>";
       txt += "<td>" + myTab[x].contato + "</td>";
       txt += "<td>" + myTab[x].telefone + "</td>";
-      txt += "<td><a herf='#'>delete</a></td></tr>";
-
+      txt += "<td><a href='#' onclick='DeleteCon("+myTab[x].cod+");'>delete</a></td></tr>";
     }
     txt += "</table>"
     document.getElementById("table").innerHTML = txt;
-  }
+  } 
 }
 httpRequestTable.open("GET", "https://us-central1-go-inventory.cloudfunctions.net/app/read-itens", true);
 httpRequestTable.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 httpRequestTable.send();
+
+  }
+
+    
+function DeleteCon(code) {
+
+
+httpRequestDel = new XMLHttpRequest();
+
+if (!httpRequestDel) {
+  alert('Impossible to connect');
+return false;
+}
+
+
+httpRequestDel.onreadystatechange = function() {
+  if (this.readyState == 4 && this.status == 200) {
+    MountTable();
+    alert("Contact Deleted");
+  } 
+}
+httpRequestDel.open("DELETE", "https://us-central1-go-inventory.cloudfunctions.net/app/delete-item/"+code, true);
+httpRequestDel.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+httpRequestDel.send();
 
   }
   ;
