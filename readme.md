@@ -4,7 +4,7 @@
 
 This HTML uses javascript AJAX to consume APIs
 
-![](assets\HTML-API.png)
+![](/assets/HTML-API.png)
 
 ## Installation
 
